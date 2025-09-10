@@ -11,11 +11,9 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.urandom(24).hex()
 
-# OpenRouter API configuration - FREE alternative to Gemini
-OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY', '')  # Optional for better rates
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY', '')  
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-# Free models available on OpenRouter
 FREE_MODELS = [
     "google/gemini-2.0-flash:free",
     "mistralai/mistral-7b-instruct:free",
@@ -78,18 +76,16 @@ def get_fallback_response(query):
     """Get intelligent fallback response based on query"""
     query_lower = query.lower()
     
-    # Check for specific topics
     for keyword, response in FALLBACK_KNOWLEDGE.items():
         if keyword in query_lower:
             return response
     
-    # If no specific match, generate a helpful response
     return f"I understand you're asking about '{query}'. This seems like an interesting topic! While I have general knowledge about many subjects, for the most current or specific information, you might want to consult specialized resources or databases. Would you like me to share what I know about related topics?"
 
 def openrouter_chat(messages, model_name=None):
     """Call OpenRouter API for AI responses"""
     if not model_name:
-        model_name = FREE_MODELS[0]  # Use first free model
+        model_name = FREE_MODELS[0]  
     
     headers = {
         "Content-Type": "application/json",
@@ -146,9 +142,7 @@ def chat():
     
     rate_limiter.record_request()
     
-    # Try OpenRouter API first
     try:
-        # Prepare messages for API
         api_messages = []
         for msg in session['chat_history']:
             if msg['role'] == 'system':
@@ -156,7 +150,6 @@ def chat():
             else:
                 api_messages.append({"role": msg['role'], "content": msg['content']})
         
-        # Try each free model until one works
         response_text = None
         for model_name in FREE_MODELS:
             response_text = openrouter_chat(api_messages, model_name)
@@ -175,7 +168,6 @@ def chat():
     except Exception as e:
         print(f"API error: {e}")
     
-    # Fallback to local knowledge
     fallback_response = get_fallback_response(user_message)
     session['chat_history'].append({"role": "model", "content": fallback_response})
     session.modified = True
