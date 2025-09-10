@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Voice Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> Web Voice Assistant</h1>
+            <p>Talk to your AI assistant directly in the browser</p>
+        </div>
+
+        <div class="assistant-container">
+            <div class="assistant-avatar">
+                <div class="avatar"></div>
+                <div class="status" id="status">Ready</div>
+            </div>
+
+            <div class="conversation" id="conversation">
+                <div class="message assistant-message">
+                    <div class="message-content">
+                        Hello! I'm your web voice assistant. Click the microphone button and start speaking!
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="listenBtn" class="btn listen-btn">
+                    <span class="btn-icon"></span>
+                    Start Listening
+                </button>
+                <button id="stopBtn" class="btn stop-btn" disabled>
+                    <span class="btn-icon">⏹️</span>
+                    Stop
+                </button>
+            </div>
+
+            <div class="visualizer">
+                <canvas id="visualizer" width="300" height="80"></canvas>
+            </div>
+
+            <div class="examples">
+                <h3>Try saying:</h3>
+                <div class="example-chips">
+                    <span class="chip">"What time is it?"</span>
+                    <span class="chip">"Tell me a joke"</span>
+                    <span class="chip">"What's the date?"</span>
+                    <span class="chip">"What's the weather?"</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant with Gemini</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-robot"></i> AI Assistant</h1>
+            <p>Powered by Google Gemini with intelligent fallbacks</p>
+            
+            <div class="status-indicators">
+                <span class="status-item {% if status.gemini_available and status.model_working %}status-good{% else %}status-warning{% endif %}">
+                    <i class="fas fa-brain"></i> Gemini: {% if status.gemini_available and status.model_working %}Connected{% else %}Limited{% endif %}
+                </span>
+                <span class="status-item {% if not status.rate_limited %}status-good{% else %}status-bad{% endif %}">
+                    <i class="fas fa-bolt"></i> API: {% if not status.rate_limited %}Ready{% else %}Rate Limited{% endif %}
+                </span>
+                <span class="status-item status-info">
+                    <i class="fas fa-microchip"></i> Model: {{ status.model_name }}
+                </span>
+            </div>
+            
+            <button id="clear-chat" class="btn-clear">
+                <i class="fas fa-broom"></i> Clear Chat
+            </button>
+        </header>
+
+        <div class="chat-container">
+            <div id="chat-history" class="chat-history">
+                <div class="message bot-message">
+                    <div class="avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Hello! I'm your AI assistant powered by Google Gemini. 
+                        {% if status.gemini_available and status.model_working %}
+                            <span class="status-text good">By Neha</span>
+                        {% else %}
+                            <span class="status-text warning">⚠ Using fallback mode</span>
+                        {% endif %}
+                        </p>
+                        {% if status.rate_limited %}
+                        <p class="rate-limit-notice">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            API rate limits active. Using intelligent fallbacks.
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <input type="text" id="user-input" placeholder="Ask me anything..." autocomplete="off" {% if status.rate_limited %}disabled{% endif %}>
+                    <button id="send-button" {% if status.rate_limited %}disabled{% endif %}>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="examples">
+                    <p>Try asking about:</p>
+                    <div class="example-chips">
+                        <span class="example-chip">Artificial Intelligence</span>
+                        <span class="example-chip">Machine Learning</span>
+                        <span class="example-chip">Blockchain</span>
+                        <span class="example-chip">Python Programming</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <p>Powered by Google Gemini • Built with Flask • Intelligent fallback system</p>
+            <p class="footer-info">
+                <span id="connection-status"></span>
+                <span id="message-count">Messages: 0</span>
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

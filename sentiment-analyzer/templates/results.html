@@ -1,0 +1,233 @@
+ {% extends "base.html" %}
+
+{% block title %}Analysis Results - SentimentPro{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero-section">
+        <h1 class="hero-title">Analysis Results</h1>
+        <p class="hero-subtitle">Detailed sentiment analysis of your text</p>
+    </div>
+
+    <div class="analysis-results">
+        {% if result %}
+            <!-- Sentiment Overview -->
+            <div class="sentiment-card">
+                <div class="sentiment-header">
+                    <h3><i class="fas fa-chart-pie"></i> Sentiment Overview</h3>
+                    <span class="sentiment-badge badge-{{ result.basic_analysis.sentiment.lower() }}">
+                        <i class="fas 
+                            {% if result.basic_analysis.sentiment.lower() == 'positive' %}fa-smile
+                            {% elif result.basic_analysis.sentiment.lower() == 'negative' %}fa-frown
+                            {% else %}fa-meh{% endif %}">
+                        </i>
+                        {{ result.basic_analysis.sentiment }}
+                    </span>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="chart-wrapper">
+                        <h4 class="chart-title">Sentiment Scores</h4>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ "%.3f"|format(result.basic_analysis.polarity) }}</div>
+                                <div class="stat-label">Polarity</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">{{ "%.3f"|format(result.basic_analysis.subjectivity) }}</div>
+                                <div class="stat-label">Subjectivity</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">{{ "%.3f"|format(result.vader_analysis.compound) }}</div>
+                                <div class="stat-label">VADER Score</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <h4 class="chart-title">Confidence Level</h4>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>Confidence</span>
+                                <span>{{ "%.1f"|format(result.basic_analysis.confidence * 100) }}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-{{ result.basic_analysis.sentiment.lower() }}" 
+                                    style="width: {{ result.basic_analysis.confidence * 100 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Analysis -->
+            <div class="sentiment-card">
+                <div class="sentiment-header">
+                    <h3><i class="fas fa-microscope"></i> Detailed Analysis</h3>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="chart-wrapper">
+                        <h4 class="chart-title">VADER Sentiment Breakdown</h4>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ "%.3f"|format(result.vader_analysis.positive) }}</div>
+                                <div class="stat-label">Positive</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">{{ "%.3f"|format(result.vader_analysis.negative) }}</div>
+                                <div class="stat-label">Negative</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">{{ "%.3f"|format(result.vader_analysis.neutral) }}</div>
+                                <div class="stat-label">Neutral</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emotion Analysis -->
+            <div class="sentiment-card">
+                <div class="sentiment-header">
+                    <h3><i class="fas fa-heart"></i> Emotion Analysis</h3>
+                </div>
+
+                <div class="emotion-grid">
+                    {% for emotion, score in result.emotion_analysis.items() %}
+                    <div class="emotion-item emotion-{{ emotion.lower() }}">
+                        <i class="fas 
+                            {% if emotion == 'Happy' %}fa-smile
+                            {% elif emotion == 'Angry' %}fa-angry
+                            {% elif emotion == 'Surprise' %}fa-surprise
+                            {% elif emotion == 'Sad' %}fa-sad-tear
+                            {% else %}fa-flushed{% endif %}">
+                        </i>
+                        <div class="emotion-score">{{ "%.1f"|format(score * 100) }}%</div>
+                        <div class="emotion-label">{{ emotion }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Text Statistics -->
+            <div class="sentiment-card">
+                <div class="sentiment-header">
+                    <h3><i class="fas fa-chart-bar"></i> Text Statistics</h3>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ result.text_statistics.word_count }}</div>
+                        <div class="stat-label">Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ result.text_statistics.sentence_count }}</div>
+                        <div class="stat-label">Sentences</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ result.text_statistics.unique_words }}</div>
+                        <div class="stat-label">Unique Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ "%.1f"|format(result.text_statistics.avg_word_length) }}</div>
+                        <div class="stat-label">Avg Word Length</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ "%.1f"|format(result.text_statistics.avg_sentence_length) }}</div>
+                        <div class="stat-label">Avg Sentence Length</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ result.text_statistics.stopword_count }}</div>
+                        <div class="stat-label">Stopwords</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ "%.3f"|format(result.text_statistics.vocabulary_richness) }}</div>
+                        <div class="stat-label">Vocabulary Richness</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keywords -->
+            <div class="sentiment-card">
+                <div class="sentiment-header">
+                    <h3><i class="fas fa-key"></i> Keyword Analysis</h3>
+                </div>
+
+                <div class="keywords-container">
+                    <div class="keyword-cloud">
+                        {% for keyword, score in result.keywords %}
+                        <span class="keyword">{{ keyword }} ({{ "%.1f"|format(score * 100) }}%)</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Readability -->
+            <div class="sentiment-card">
+                <div class="sentiment-header">
+                    <h3><i class="fas fa-book-reader"></i> Readability Scores</h3>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ result.readability_scores.flesch_reading_ease }}</div>
+                        <div class="stat-label">Flesch Reading Ease</div>
+                        <small>
+                            {% if result.readability_scores.flesch_reading_ease >= 90 %}Very Easy
+                            {% elif result.readability_scores.flesch_reading_ease >= 80 %}Easy
+                            {% elif result.readability_scores.flesch_reading_ease >= 70 %}Fairly Easy
+                            {% elif result.readability_scores.flesch_reading_ease >= 60 %}Standard
+                            {% elif result.readability_scores.flesch_reading_ease >= 50 %}Fairly Difficult
+                            {% elif result.readability_scores.flesch_reading_ease >= 30 %}Difficult
+                            {% else %}Very Difficult{% endif %}
+                        </small>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ result.readability_scores.flesch_kincaid_grade }}</div>
+                        <div class="stat-label">Grade Level</div>
+                        <small>Approximate school grade</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Original Text -->
+            <div class="sentiment-card">
+                <div class="sentiment-header">
+                    <h3><i class="fas fa-file-alt"></i> Original Text</h3>
+                </div>
+                <div class="original-text">
+                    <p>{{ result.text }}</p>
+                </div>
+            </div>
+
+        {% else %}
+            <div class="error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>No analysis results found. Please analyze some text first.</span>
+            </div>
+        {% endif %}
+
+        <div class="action-buttons">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Analyzer
+            </a>
+            <button onclick="window.print()" class="btn btn-secondary">
+                <i class="fas fa-print"></i> Print Results
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add any additional JavaScript for the results page here
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Results page loaded');
+    });
+</script>
+{% endblock %}
